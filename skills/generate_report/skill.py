@@ -32,7 +32,10 @@ from skills.base import Skill, SkillResult
 
 logger = logging.getLogger("skills.generate_report")
 
-_SUMMARIZATION_DIR = Path(__file__).resolve().parents[2] / "Summarization"
+# Depth note: this file is <project-root>/Skills/skills/<pkg>/skill.py, so
+# parents[3] is the project root holding both the Skills clone and the
+# sibling Summarization repo. Update if this file ever moves.
+_SUMMARIZATION_DIR = Path(__file__).resolve().parents[3] / "Summarization"
 
 
 def _ensure_summarization_importable() -> None:

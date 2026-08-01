@@ -247,7 +247,13 @@ def test_cli_args_parser() -> None:
     # Loading summary.run pulls in supabase + the full DB stack, which we
     # don't want in the smoke suite. Instead, extract the function source
     # from the file and exec just that — the parser is self-contained.
-    run_py = Path(__file__).resolve().parents[2] / "Summarization" / "summary" / "run.py"
+    run_py = Path(__file__).resolve().parents[3] / "Summarization" / "summary" / "run.py"
+    if not run_py.is_file():
+        # The sibling Summarization repo isn't checked out next to this one.
+        # Skip rather than crash: working from a standalone Skills clone is
+        # legitimate, and this test only covers that repo's CLI arg parser.
+        print(f"    SKIP: sibling repo not present at {run_py}")
+        return
     src = run_py.read_text(encoding="utf-8")
     # Naive but sufficient: pull the function out by its definition line.
     marker = "def _parse_skill_args"
@@ -343,10 +349,14 @@ def main() -> int:
     test_router_no_api_key()
     test_router_parses_mocked_response()
     test_router_handles_code_fence()
+    # Create each temp dir BEFORE the test that writes into it. These mkdirs
+    # used to run *after* their tests, so a fresh machine failed on test [6]
+    # with FileNotFoundError and only passed on the second run, once the
+    # trailing mkdir had left the directory behind.
+    (tmp_root / "dry").mkdir(parents=True, exist_ok=True)
     test_generate_report_dry_run_with_mocked_supabase(tmp_root / "dry")
-    (tmp_root / "dry").mkdir(exist_ok=True)
+    (tmp_root / "full").mkdir(parents=True, exist_ok=True)
     test_generate_report_full_path_with_mocks(tmp_root / "full")
-    (tmp_root / "full").mkdir(exist_ok=True)
     test_compare_tickers_with_mocks()
     test_compare_tickers_rejects_singletons()
     test_cli_args_parser()

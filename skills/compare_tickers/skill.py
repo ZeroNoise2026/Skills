@@ -24,7 +24,10 @@ from skills.base import Skill, SkillResult
 
 logger = logging.getLogger("skills.compare_tickers")
 
-_SUMMARIZATION_DIR = Path(__file__).resolve().parents[2] / "Summarization"
+# Depth note: this file is <project-root>/Skills/skills/<pkg>/skill.py, so
+# parents[3] is the project root holding both the Skills clone and the
+# sibling Summarization repo. Update if this file ever moves.
+_SUMMARIZATION_DIR = Path(__file__).resolve().parents[3] / "Summarization"
 
 # Per-ticker character budget. Three tickers × 80k ≈ 240k chars ≈ ~60k
 # tokens — fits comfortably in moonshot-v1-128k. Tune up if you switch
